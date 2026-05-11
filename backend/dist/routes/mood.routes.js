@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.moodRouter = void 0;
+const express_1 = require("express");
+const mood_controller_1 = require("../controllers/mood.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const validate_middleware_1 = require("../middleware/validate.middleware");
+const mood_validator_1 = require("../validators/mood.validator");
+exports.moodRouter = (0, express_1.Router)();
+exports.moodRouter.use(auth_middleware_1.requireAuth);
+exports.moodRouter.post("/checkin", (0, validate_middleware_1.validateBody)(mood_validator_1.moodCheckinSchema), mood_controller_1.submitMoodCheckin);
+exports.moodRouter.get("/history", mood_controller_1.getMoodHistory);

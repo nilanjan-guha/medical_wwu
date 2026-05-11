@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.journalRouter = void 0;
+const express_1 = require("express");
+const journal_controller_1 = require("../controllers/journal.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const validate_middleware_1 = require("../middleware/validate.middleware");
+const journal_validator_1 = require("../validators/journal.validator");
+exports.journalRouter = (0, express_1.Router)();
+exports.journalRouter.use(auth_middleware_1.requireAuth);
+exports.journalRouter.post("/", (0, validate_middleware_1.validateBody)(journal_validator_1.createJournalSchema), journal_controller_1.createJournal);
+exports.journalRouter.get("/", journal_controller_1.getJournals);
+exports.journalRouter.patch("/:id", (0, validate_middleware_1.validateBody)(journal_validator_1.updateJournalSchema), journal_controller_1.updateJournal);
+exports.journalRouter.delete("/:id", journal_controller_1.deleteJournal);

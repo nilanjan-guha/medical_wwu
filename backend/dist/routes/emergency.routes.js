@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.emergencyRouter = void 0;
+const express_1 = require("express");
+const emergency_controller_1 = require("../controllers/emergency.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+exports.emergencyRouter = (0, express_1.Router)();
+exports.emergencyRouter.use(auth_middleware_1.requireAuth);
+exports.emergencyRouter.get("/contacts", emergency_controller_1.getEmergencyContacts);
+exports.emergencyRouter.post("/contacts", emergency_controller_1.addEmergencyContact);
