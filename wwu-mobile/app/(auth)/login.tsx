@@ -12,7 +12,7 @@ import { Subtitle, Title } from "../../src/components/ui/Text";
 import { useAuthStore } from "../../src/store/authStore";
 
 const schema = z.object({
-  email: z.string().email(),
+  email: z.string().trim().email("Enter a valid email address"),
   password: z.string().min(8)
 });
 
@@ -23,24 +23,36 @@ export default function LoginScreen() {
   const {
     control,
     handleSubmit,
-    formState: { isSubmitting }
+    formState: { isSubmitting, errors }
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: { email: "", password: "" }
   });
 
-  const onSubmit = handleSubmit(async (values) => {
-    setErrorMessage(null);
-    try {
-      const data = await authApi.login(values);
-      await setSession(data.user, data.accessToken, data.refreshToken);
-      router.replace("/(tabs)");
-    } catch (err: any) {
-      const message = err?.response?.data?.message ?? "Could not log in.";
-      setErrorMessage(message);
-      Alert.alert("Login failed", message);
+  const onSubmit = handleSubmit(
+    async (values) => {
+      setErrorMessage(null);
+      try {
+        const data = await authApi.login({
+          email: values.email.trim().toLowerCase(),
+          password: values.password
+        });
+        await setSession(data.user, data.accessToken, data.refreshToken);
+        router.replace("/(tabs)");
+      } catch (err: any) {
+        const message = err?.response?.data?.message ?? "Could not log in.";
+        setErrorMessage(message);
+        Alert.alert("Login failed", message);
+      }
+    },
+    (invalid) => {
+      const message =
+        invalid.email?.message ??
+        invalid.password?.message ??
+        "Please enter a valid email and password.";
+      setErrorMessage(String(message));
     }
-  });
+  );
 
   return (
     <Screen>
@@ -69,7 +81,7 @@ export default function LoginScreen() {
         name="email"
         render={({ field: { onChange, value } }) => (
           <Input
-            placeholder="Email"
+            placeholder="Email address"
             autoCapitalize="none"
             value={value}
             onChangeText={(text) => {
@@ -79,6 +91,9 @@ export default function LoginScreen() {
           />
         )}
       />
+      {errors.email?.message ? (
+        <Text style={{ color: "#B91C1C", fontSize: 12 }}>{errors.email.message}</Text>
+      ) : null}
       <Controller
         control={control}
         name="password"
@@ -94,6 +109,9 @@ export default function LoginScreen() {
           />
         )}
       />
+      {errors.password?.message ? (
+        <Text style={{ color: "#B91C1C", fontSize: 12 }}>{errors.password.message}</Text>
+      ) : null}
       <Button title="Login" loading={isSubmitting} onPress={onSubmit} />
       <Button
         title="Forgot Password"

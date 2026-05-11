@@ -40,7 +40,8 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const login = asyncHandler(async (req: Request, res: Response) => {
-  const user = await UserModel.findOne({ email: req.body.email });
+  const email = String(req.body.email ?? "").trim().toLowerCase();
+  const user = await UserModel.findOne({ email });
   if (!user) {
     throw new ApiError(404, "User does not exist");
   }
