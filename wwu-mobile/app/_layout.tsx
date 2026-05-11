@@ -2,6 +2,7 @@ import { Stack, useRouter, useSegments } from "expo-router";
 import React, { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { ThemeProvider } from "styled-components/native";
+import { Analytics } from "@vercel/analytics/react";
 import { authApi } from "../src/api/auth.api";
 import { useNotifications } from "../src/hooks/useNotifications";
 import { AppProvider } from "../src/context/AppContext";
@@ -69,6 +70,7 @@ export default function RootLayout() {
     <ThemeProvider theme={makeTheme(mode)}>
       <AppProvider>
         <RouteGate />
+        <Analytics />
       </AppProvider>
     </ThemeProvider>
   );
